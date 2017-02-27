@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+_exit() {
+  rm -rf $builddir
+  exit $1
+}
+
+current=`pwd`
+builddir=$current/build
+mkdir $builddir
+cd $builddir
+tar=curl-7_52_1.tar.gz
+curl -L -O https://github.com/curl/curl/archive/$tar || _exit 1
+tar xzf $tar --strip-components=1 || _exit 1
+# autoreconf --install || _exit 1
+# ./configure || _exit 1
+cd $current
+/usr/local/mosop/crystal/0.20.5/bin/crystal run bin/generate_c/main.cr --link-flags "`llvm-config-3.8 --ldflags`" -- $builddir/include || _exit 1
+_exit 0
